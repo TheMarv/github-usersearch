@@ -1,25 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Box from '@mui/material/Box';
+import Searchbar from "./components/Searchbar";
+import Container from "@mui/material/Container";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useStore } from './hooks/useStore';
 
 function App() {
+
+  const loading = useStore(state => state.loading);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container maxWidth="sm" sx={{paddingY: 3, position: 'relative'}}>
+      <Searchbar />
+      {loading && 
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          position: 'absolute',
+          top: 128,
+          width: '100%'
+        }}>
+          <CircularProgress />
+        </Box>
+      }
+    </Container>
   );
 }
 
