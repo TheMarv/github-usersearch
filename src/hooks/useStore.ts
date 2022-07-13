@@ -41,13 +41,13 @@ export const useStore = create(
         });
         const lastRequest = get().lastRequest + 6000 - new Date().getTime();
         setTimeout(() => {
-          fetch(`https://api.github.com/search/issues?q=${get().searchTerm}&order=asc`)
+          fetch(`https://api.github.com/search/users?q=${get().searchTerm}&order=asc`)
             .then(response => response.json())
             .then(data => {
               const items: any[] = data.items;
               set(state => {
                 return {
-                  searchResults: [...state.searchResults, items],
+                  searchResults: [...state.searchResults, ...items],
                   loading: false,
                   lastRequest: new Date().getTime()
                 }
@@ -56,5 +56,9 @@ export const useStore = create(
         }, lastRequest > 0 ? lastRequest : 0);
       }
     }
+  },
+  {
+    name: 'Github-UserSearch',
+    partialize: state => Object.fromEntries(Object.entries(state).filter(([key]) => !["favourites"].includes(key)))
   })
 );

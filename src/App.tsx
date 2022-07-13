@@ -3,6 +3,7 @@ import Searchbar from "./components/Searchbar";
 import Container from "@mui/material/Container";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useStore } from './hooks/useStore';
+import UserList from './components/UserList';
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
           <CircularProgress />
         </Box>
       }
+      <UserList />
     </Container>
   );
 }
