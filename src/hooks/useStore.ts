@@ -1,14 +1,16 @@
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
+import { User } from '../components/UserItem';
 
 interface SearchState {
   searchTerm: string;
   searchTermTimeout: NodeJS.Timeout | null;
-  searchResults: any[],
+  searchResults: User[],
   loading: boolean,
   lastRequest: number;
   setSearchTerm: (newSearchTerm: string) => void;
   fetchSearch: () => void;
+  toggleFavorites: (id: number) => void;
 }
 
 export const useStore = create(
@@ -44,7 +46,7 @@ export const useStore = create(
           fetch(`https://api.github.com/search/users?q=${get().searchTerm}&order=asc`)
             .then(response => response.json())
             .then(data => {
-              const items: any[] = data.items;
+              const items: User[] = data.items;
               set(state => {
                 return {
                   searchResults: [...state.searchResults, ...items],
@@ -54,11 +56,20 @@ export const useStore = create(
               });
             });
         }, lastRequest > 0 ? lastRequest : 0);
+      },
+      toggleFavorites: id => {
+        set(state => {
+          return {
+            searchResults: state.searchResults.map(user => 
+              user.id === id ? 
+              {...user, favorite: !user.favorite} 
+              : user)
+          }
+        });
       }
     }
   },
   {
     name: 'Github-UserSearch',
-    partialize: state => Object.fromEntries(Object.entries(state).filter(([key]) => !["favourites"].includes(key)))
   })
 );

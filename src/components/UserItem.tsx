@@ -2,15 +2,20 @@ import Box from "@mui/material/Box";
 import Avatar from '@mui/material/Avatar'
 import { IconButton, Typography } from "@mui/material";
 import { Star } from "@mui/icons-material";
+import { useStore } from "../hooks/useStore";
 
 export interface User {
   login: string;
   id: number;
   avatar_url: string;
   url: string;
+  favorite: boolean;
 }
 
-export default function UserItem({login, id, avatar_url, url}: User) {
+export default function UserItem({login, id, avatar_url, url, favorite}: User) {
+
+  const toggleFavorite = useStore(state => state.toggleFavorites);
+
   return (
     <Box sx={{
       position: 'relative',
@@ -42,11 +47,15 @@ export default function UserItem({login, id, avatar_url, url}: User) {
           {login}
         </Typography>
       </Box>
-        <IconButton sx={{
-          position: 'absolute',
-          right: 1,
-          top: 1
-        }}>
+        <IconButton
+          sx={{
+            position: 'absolute',
+            right: 1,
+            top: 1,
+            color: favorite ? 'gold' : 'gray'
+          }}
+          onClick={() => toggleFavorite(id)}
+        >
           <Star />
         </IconButton>
     </Box>
