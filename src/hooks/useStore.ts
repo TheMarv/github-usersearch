@@ -8,6 +8,9 @@ interface SearchState {
   searchResults: User[],
   loading: boolean,
   lastRequest: number;
+  page: number;
+  hasMore: boolean;
+  setPage: (amount: number) => void;
   setSearchTerm: (newSearchTerm: string) => void;
   fetchSearch: () => void;
   toggleFavorites: (id: number) => void;
@@ -20,12 +23,16 @@ export const useStore = create(
       searchTermTimeout: null,
       searchResults: [],
       loading: false,
+      hasMore: false,
       lastRequest: 0,
+      page: 1,
       setSearchTerm: (newSearchTerm) => {
         set(state => {
           if (state.searchTermTimeout) clearTimeout(state.searchTermTimeout);
           if (newSearchTerm.length > 2) {
             return {
+              searchResults: [],
+              page: 0,
               searchTerm: newSearchTerm,
               searchTermTimeout: setTimeout(get().fetchSearch, 500),
             }
@@ -43,15 +50,18 @@ export const useStore = create(
         });
         const lastRequest = get().lastRequest + 6000 - new Date().getTime();
         setTimeout(() => {
-          fetch(`https://api.github.com/search/users?q=${get().searchTerm}&order=asc`)
+          fetch(`https://api.github.com/search/users?q=${get().searchTerm}&per_page=30&page=${get().page}&order=asc`)
             .then(response => response.json())
             .then(data => {
-              const items: User[] = data.items;
               set(state => {
+                const items: User[] = data.items;
+                console.log(items.length > 0);
                 return {
-                  searchResults: [...state.searchResults, ...items],
+                  searchResults: [...state.searchResults, ...items].filter((user, index, newArray) => 
+                    index === newArray.findIndex(filterUser => filterUser.id === user.id)),
                   loading: false,
-                  lastRequest: new Date().getTime()
+                  lastRequest: new Date().getTime(),
+                  hasMore: items.length > 0
                 }
               });
             });
@@ -66,10 +76,20 @@ export const useStore = create(
               : user)
           }
         });
+      },
+      setPage: (amount) => {
+        set(state => {
+          return {
+            page: state.page + amount
+          };
+        });
       }
     }
   },
   {
     name: 'Github-UserSearch',
+    partialize: state => {
+      return Object.fromEntries(Object.entries(state).filter(([key]) => ['page', 'searchResults', 'searchTerm'].includes(key)));
+    }
   })
 );
