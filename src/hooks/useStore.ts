@@ -1,6 +1,24 @@
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User } from '../components/UserItem';
+
+export interface User {
+  login: string;
+  id: number;
+  avatar_url: string;
+  favorite: boolean;
+  user_details?: {
+    name: string;
+    company: string;
+    blog: string;
+    twitter_username: string;
+    location: string;
+    public_repos: number;
+    public_gists: number;
+    followers: number;
+    following: number;
+    created_at: Date;
+  }
+}
 
 interface SearchState {
   searchTerm: string;
@@ -10,10 +28,12 @@ interface SearchState {
   lastRequest: number;
   page: number;
   hasMore: boolean;
+  currentUser: User | null;
   setPage: (amount: number) => void;
   setSearchTerm: (newSearchTerm: string) => void;
   fetchSearch: () => void;
   toggleFavorites: (id: number) => void;
+  setCurrentUser: (id: number) => void;
 }
 
 export const useStore = create(
@@ -26,6 +46,7 @@ export const useStore = create(
       hasMore: false,
       lastRequest: 0,
       page: 1,
+      currentUser: null,
       setSearchTerm: (newSearchTerm) => {
         set(state => {
           if (state.searchTermTimeout) clearTimeout(state.searchTermTimeout);
@@ -43,7 +64,7 @@ export const useStore = create(
         });
       },
       fetchSearch: () => {
-        set(state => {
+        set(() => {
           return {
             loading: true
           }
@@ -55,7 +76,6 @@ export const useStore = create(
             .then(data => {
               set(state => {
                 const items: User[] = data.items;
-                console.log(items.length > 0);
                 return {
                   searchResults: [...state.searchResults, ...items].filter((user, index, newArray) => 
                     index === newArray.findIndex(filterUser => filterUser.id === user.id)),
@@ -81,6 +101,29 @@ export const useStore = create(
         set(state => {
           return {
             page: state.page + amount
+          };
+        });
+      },
+      setCurrentUser: (id) => {
+        set(state => {
+          const user = state.searchResults.find(user => user.id === id);
+          if (user) {
+            fetch(`https://api.github.com/users/${user.login}`)
+            .then(response => response.json())
+            .then(data => {
+              set(state => {
+                const newUser: User = {...user, user_details: data };
+                return {
+                  searchResults: state.searchResults.map(user => 
+                    user.id === id ? newUser : user
+                  ),
+                  currentUser: newUser
+                };
+              });
+            });
+          }
+          return {
+            currentUser: user || null
           };
         });
       }

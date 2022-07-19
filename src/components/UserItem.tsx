@@ -2,28 +2,28 @@ import Box from "@mui/material/Box";
 import Avatar from '@mui/material/Avatar'
 import { IconButton, Typography } from "@mui/material";
 import { Star } from "@mui/icons-material";
-import { useStore } from "../hooks/useStore";
+import { User, useStore } from "../hooks/useStore";
 
-export interface User {
-  login: string;
-  id: number;
-  avatar_url: string;
-  url: string;
-  favorite: boolean;
+interface UserProps extends User {
+  border?: boolean;
 }
 
-export default function UserItem({login, id, avatar_url, url, favorite}: User) {
+export default function UserItem({login, id, avatar_url, favorite, border = true}: UserProps) {
 
   const toggleFavorite = useStore(state => state.toggleFavorites);
+  const setCurrentUser = useStore(state => state.setCurrentUser);
 
   return (
-    <Box sx={{
-      position: 'relative',
-      display: 'flex',
-      paddingY: 2,
-      paddingX: 1,
-      border: '1px solid black',
-    }}>
+    <Box
+      sx={{
+        position: 'relative',
+        display: 'flex',
+        paddingY: 2,
+        paddingX: 1,
+        border: border ? '1px solid black' : '',
+      }}
+      onClick={() => setCurrentUser(id)}
+    >
       <Avatar
         src={avatar_url}
         alt={login}
