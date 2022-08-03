@@ -1,15 +1,20 @@
-import Box from "@mui/material/Box";
-import Avatar from '@mui/material/Avatar'
-import { IconButton, Typography } from "@mui/material";
-import { Star } from "@mui/icons-material";
-import { User, useStore } from "../hooks/useStore";
+import Box from '@mui/material/Box';
+import Avatar from '@mui/material/Avatar';
+import { IconButton, Typography } from '@mui/material';
+import { Star } from '@mui/icons-material';
+import { User, useStore } from '../hooks/useStore';
 
 interface UserProps extends User {
   border?: boolean;
 }
 
-export default function UserItem({login, id, avatar_url, favorite, border = true}: UserProps) {
-
+export default function UserItem({
+  login,
+  id,
+  avatar_url,
+  favorite,
+  border = true,
+}: UserProps) {
   const toggleFavorite = useStore(state => state.toggleFavorites);
   const setCurrentUser = useStore(state => state.setCurrentUser);
 
@@ -29,10 +34,10 @@ export default function UserItem({login, id, avatar_url, favorite, border = true
         alt={login}
         sx={{
           width: 72,
-          height: 72
+          height: 72,
         }}
       />
-      <Box 
+      <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -40,24 +45,21 @@ export default function UserItem({login, id, avatar_url, favorite, border = true
           justifyContent: 'center',
         }}
       >
-        <Typography
-          component="h2"
-          variant="h4"
-        >
+        <Typography component="h2" variant="h4">
           {login}
         </Typography>
       </Box>
-        <IconButton
-          sx={{
-            position: 'absolute',
-            right: 1,
-            top: 1,
-            color: favorite ? 'gold' : 'gray'
-          }}
-          onClick={() => toggleFavorite(id)}
-        >
-          <Star />
-        </IconButton>
+      <IconButton
+        sx={{
+          position: 'absolute',
+          right: 1,
+          top: 1,
+          color: favorite ? 'gold' : 'gray',
+        }}
+        onClick={() => toggleFavorite(id)}
+      >
+        <Star />
+      </IconButton>
     </Box>
-  )
+  );
 }

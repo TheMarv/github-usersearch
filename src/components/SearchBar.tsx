@@ -4,8 +4,7 @@ import ClearAdornment from './ClearAdornment';
 import { useState } from 'react';
 
 export default function Searchbar() {
-
-  const [ hideClear, setHideClear] = useState(true);
+  const [hideClear, setHideClear] = useState(true);
 
   const searchTerm = useStore(state => state.searchTerm);
   const setSearchTerm = useStore(state => state.setSearchTerm);
@@ -20,12 +19,14 @@ export default function Searchbar() {
       value={searchTerm}
       onChange={onSearchTermChange}
       fullWidth
-      autoComplete='off'
+      autoComplete="off"
       onFocus={() => setHideClear(false)}
       onBlur={() => setHideClear(true)}
       InputProps={{
-        endAdornment: (<ClearAdornment setSearchTerm={setSearchTerm} hidden={hideClear}/>)
+        endAdornment: (
+          <ClearAdornment setSearchTerm={setSearchTerm} hidden={hideClear} />
+        ),
       }}
     />
-  )
+  );
 }

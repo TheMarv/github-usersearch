@@ -1,6 +1,6 @@
-import { CircularProgress, Grid, Typography } from "@mui/material";
-import { useStore } from "../hooks/useStore";
-import UserItem from "./UserItem";
+import { CircularProgress, Grid, Typography } from '@mui/material';
+import { useStore } from '../hooks/useStore';
+import UserItem from './UserItem';
 import PullToRefresh from 'react-simple-pull-to-refresh';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -11,10 +11,12 @@ export default function UserList() {
   const fetchSearch = useStore(state => state.fetchSearch);
 
   return (
-    <PullToRefresh onRefresh={async () => {
-      setPage(-1);
-      fetchSearch();
-    }}>
+    <PullToRefresh
+      onRefresh={async () => {
+        setPage(-1);
+        fetchSearch();
+      }}
+    >
       <Grid container>
         <InfiniteScroll
           dataLength={searchResults.length}
@@ -24,13 +26,11 @@ export default function UserList() {
             fetchSearch();
           }}
           loader={<CircularProgress />}
-          endMessage={
-            <Typography component="p">No more results</Typography>
-          }
+          endMessage={<Typography component="p">No more results</Typography>}
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.75rem'
+            gap: '0.75rem',
           }}
         >
           {searchResults.map(result => (
@@ -41,5 +41,5 @@ export default function UserList() {
         </InfiniteScroll>
       </Grid>
     </PullToRefresh>
-  )
+  );
 }
